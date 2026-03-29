@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miran-Lingo OS</title>
+    <style>
+        :root { --kirmizi: #d32f2f; --sari: #fbc02d; --bg: #fffde7; --kart: white; --yazi: #333; }
+        .dark { --bg: #121212; --kart: #1e1e1e; --yazi: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--yazi); margin: 0; transition: 0.3s; min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Ekranlar */
+        .screen { display: none; width: 90%; max-width: 450px; text-align: center; margin-top: 50px; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+
+        /* Giriş & Menü */
+        .card { background: var(--kart); border-radius: 30px; padding: 30px; border-bottom: 8px solid #ccc; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        input { width: 85%; padding: 15px; border-radius: 15px; border: 2px solid #ddd; margin: 10px 0; font-size: 1.1rem; text-align: center; }
+        .btn { background: var(--kirmizi); color: white; border: none; padding: 15px 25px; border-radius: 15px; font-weight: bold; cursor: pointer; margin: 10px; width: 100%; box-shadow: 0 5px #b71c1c; }
+        .btn-sari { background: var(--sari); color: #333; box-shadow: 0 5px #f9a825; }
+
+        /* Oyun Alanı */
+        .progress-box { width: 100%; height: 8px; background: #ddd; position: fixed; top: 0; z-index: 100; }
+        #bar { width: 0%; height: 100%; background: var(--sari); transition: 0.3s; }
+        .word { font-size: 2.5rem; font-weight: 900; color: var(--kirmizi); margin: 20px 0; }
+        .opt { background: #eee; padding: 15px; margin: 10px 0; border-radius: 15px; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+        .opt:hover { border-color: var(--sari); }
+
+        /* Header */
+        .header { width: 90%; display: flex; justify-content: space-between; padding: 15px; font-size: 0.9rem; font-weight: bold; }
+        @keyframes shake { 0%, 100% {transform:translateX(0);} 25% {transform:translateX(-10px);} 75% {transform:translateX(10px);} }
+        .shake { animation: shake 0.3s; }
+    </style>
+</head>
+<body>
+
+    <div class="progress-box"><div id="bar"></div></div>
+
+    <div id="login-screen" class="screen" style="display: block;">
+        <div class="card">
+            <h1>Miran-Lingo 🚀</h1>
+            <p>Hoş geldin! Adını yazar mısın?</p>
+            <input type="text" id="username-input" placeholder="Adın nedir?">
+            <button class="btn" onclick="saveUser()">BAŞLA</button>
+        </div>
+    </div>
+
+    <div id="menu-screen" class="screen">
+        <div class="card">
+            <h2>Merhaba, <span id="user-display"></span>!</h2>
+            <p>Rütben: <span id="rank">Ezik</span> | XP: <span id="total-xp">0</span></p>
+            <button class="btn" onclick="startLearn()">📚 İngilizce Öğren (600 Kelime)</button>
+            <button class="btn btn-sari" onclick="startQuiz()">✍️ İngilizce Soru Çöz (120 Soru)</button>
+            <button class="btn" style="background:gray; box-shadow:none;" onclick="logout()">Çıkış Yap</button>
+        </div>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <div class="header">
+            <div>❤️ <span id="hp">5</span></div>
+            <div>🔥 <span id="streak">0</span></div>
+            <div onclick="document.body.classList.toggle('dark')">🌙</div>
+        </div>
+        <div class="card" id="main-card">
+            <div id="q-text" style="opacity: 0.7;">Bunu Çevir:</div>
+            <div class="word" id="target">Apple</div>
+            <div id="quiz-options" style="display: none;"></div>
+            <input type="text" id="userInput" placeholder="Cevabın...">
+            <button class="btn" id="check-btn" onclick="check()">KONTROL ET</button>
+            <div id="msg" style="margin-top:10px; font-weight:bold; display:none;"></div>
+        </div>
+        <button class="btn" style="margin-top:20px; background:none; border:2px solid gray; color:gray;" onclick="toMenu()">Ana Menüye Dön</button>
+    </div>
+
+    <script>
+        // --- DATA ÜRETİMİ ---
+        const words = []; 
+        const baseWords = [{e:"Apple", t:"Elma"},{e:"Table", t:"Masa"},{e:"Phone", t:"Telefon"},{e:"Water", t:"Su"},{e:"School", t:"Okul"}];
+        while(words.length < 600) { words.push(...baseWords); } // 600 kelimeye tamamla
+
+        const quizData = [];
+        for(let i=1; i<=120; i++) {
+            quizData.push({ q: `Soru ${i}: English?`, a: "İngilizce", o: ["İngilizce", "Türkçe", "Fransızca", "Almanca"] });
+        }
+
+        let mode = "learn"; // learn or quiz
+        let cur = 0, xp = 0, hp = 5, streak = 0;
+        let username = localStorage.getItem('miranUser');
+
+        if(username) showMenu();
+
+        function saveUser() {
+            const val = document.getElementById('username-input').value;
+            if(val) { localStorage.setItem('miranUser', val); username = val; showMenu(); }
+        }
+
+        function showMenu() {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.getElementById('menu-screen').style.display = 'block';
+            document.getElementById('user-display').innerText = username;
+            xp = parseInt(localStorage.getItem('miranXP') || 0);
+            document.getElementById('total-xp').innerText = xp;
+            updateRank();
+        }
+
+        function updateRank() {
+            const ranks = ["Ezik", "Başlangıç", "Usta", "Efsane", "Miran Seviyesi"];
+            document.getElementById('rank').innerText = ranks[Math.floor(xp/1000)] || "Kral";
+        }
+
+        function startLearn() {
+            mode = "learn"; cur = 0; hp = 5; streak = 0;
+            setupGame();
+        }
+
+        function startQuiz() {
+            mode = "quiz"; cur = 0; hp = 5; streak = 0;
+            setupGame();
+        }
+
+        function setupGame() {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.getElementById('game-screen').style.display = 'block';
+            document.getElementById('quiz-options').style.display = mode === "quiz" ? "block" : "none";
+            document.getElementById('userInput').style.display = mode === "learn" ? "block" : "none";
+            document.getElementById('check-btn').style.display = mode === "learn" ? "block" : "none";
+            loadQ();
+        }
+
+        function loadQ() {
+            const m = document.getElementById('msg'); m.style.display = 'none';
+            if(mode === "learn") {
+                document.getElementById('target').innerText = words[cur].e;
+                document.getElementById('bar').style.width = (cur / 600 * 100) + "%";
+            } else {
+                const q = quizData[cur];
+                document.getElementById('target').innerText = q.q;
+                const optDiv = document.getElementById('quiz-options');
+                optDiv.innerHTML = "";
+                q.o.forEach(o => {
+                    optDiv.innerHTML += `<div class="opt" onclick="checkQuiz('${o}')">${o}</div>`;
+                });
+                document.getElementById('bar').style.width = (cur / 120 * 100) + "%";
+            }
+        }
+
+        function check() {
+            const val = document.getElementById('userInput').value.trim().toLowerCase();
+            const correct = words[cur].t.toLowerCase();
+            processResult(val === correct, correct);
+        }
+
+        function checkQuiz(choice) {
+            processResult(choice === quizData[cur].a, quizData[cur].a);
+        }
+
+        function processResult(isCorrect, answer) {
+            const m = document.getElementById('msg');
+            m.style.display = "block";
+            if(isCorrect) {
+                xp += 20; streak++;
+                m.innerText = "✅ DOĞRU!"; m.style.color = "green";
+                localStorage.setItem('miranXP', xp);
+            } else {
+                hp--; streak = 0;
+                document.getElementById('main-card').classList.add('shake');
+                setTimeout(() => document.getElementById('main-card').classList.remove('shake'), 300);
+                m.innerText = "❌ YANLIŞ! Cevap: " + answer.toUpperCase(); m.style.color = "red";
+            }
+            document.getElementById('hp').innerText = hp;
+            document.getElementById('streak').innerText = streak;
+            
+            if(hp <= 0) { alert("Canlar bitti! Menüye dönülüyor."); toMenu(); }
+            else { cur++; setTimeout(loadQ, 1500); }
+        }
+
+        function toMenu() { showMenu(); }
+        function logout() { localStorage.clear(); location.reload(); }
+    </script>
+</body>
+</html>
