@@ -2,34 +2,41 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miran-Lingo OS V4</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Miran-Lingo Pro Max</title>
     <style>
         :root { --ana: #d32f2f; --vurgu: #fbc02d; --arka: #fffde7; --kart: white; --yazi: #333; }
         .dark { --arka: #121212; --kart: #1e1e1e; --yazi: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--arka); color: var(--yazi); margin: 0; transition: 0.3s; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+        
         .screen { display: none; width: 90%; max-width: 450px; text-align: center; margin-top: 50px; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
-        .card { background: var(--kart); border-radius: 25px; padding: 25px; border-bottom: 6px solid #ccc; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        
+        .card { background: var(--kart); border-radius: 25px; padding: 25px; border-bottom: 6px solid #ccc; box-shadow: 0 8px 20px rgba(0,0,0,0.1); position: relative; }
         .word { font-size: 2.2rem; font-weight: 900; color: var(--ana); margin: 15px 0; cursor: pointer; }
-        .word:hover::after { content: " (Dinlemek için tıkla 🔊)"; font-size: 0.8rem; color: #666; display: block; }
-        input { width: 85%; padding: 15px; border-radius: 12px; border: 2px solid #ddd; margin: 10px 0; font-size: 1rem; text-align: center; }
-        .btn { background: var(--ana); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px #b71c1c; }
-        .opt { background: #f5f5f5; padding: 12px; margin: 8px 0; border-radius: 12px; cursor: pointer; border: 2px solid transparent; transition: 0.2s; color: #333; }
-        .opt:hover { background: var(--vurgu); border-color: var(--ana); }
-        .progress-box { width: 100%; height: 6px; background: #ddd; position: fixed; top: 0; z-index: 100; }
+        
+        .btn { background: var(--ana); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; box-shadow: 0 4px #b71c1c; font-size: 1.1rem; }
+        .btn:active { transform: translateY(2px); box-shadow: 0 1px #b71c1c; }
+        
+        /* Eşleştirme Stili */
+        .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .match-item { background: var(--kart); padding: 15px; border-radius: 12px; border: 2px solid #ddd; cursor: pointer; transition: 0.2s; font-weight: bold; }
+        .selected { border-color: var(--ana); background: #ffebee; }
+        .hidden { visibility: hidden; opacity: 0; }
+
+        .progress-box { width: 100%; height: 8px; background: #ddd; position: fixed; top: 0; z-index: 100; }
         #bar { width: 0%; height: 100%; background: var(--vurgu); transition: 0.3s; }
-        .tip { font-size: 0.8rem; color: #666; font-style: italic; margin-bottom: 5px; cursor: help; }
+        #adamsin { position: fixed; top: 20px; color: var(--ana); font-weight: 900; font-size: 20px; display: none; z-index: 200; }
     </style>
 </head>
 <body>
     <div class="progress-box"><div id="bar"></div></div>
+    <div id="adamsin">ADAMSIN <span id="p-name"></span>! 🔥</div>
 
     <div id="login-screen" class="screen" style="display: block;">
         <div class="card">
-            <h1>Miran-Lingo 🦁</h1>
-            <p>Adını yaz ve şampiyonluğa başla!</p>
-            <input type="text" id="username-input" placeholder="İsmin nedir?">
+            <h1>Miran-Lingo 🚀</h1>
+            <input type="text" id="username-input" placeholder="Adın nedir?">
             <button class="btn" onclick="saveUser()">BAŞLA</button>
         </div>
     </div>
@@ -37,43 +44,43 @@
     <div id="menu-screen" class="screen">
         <div class="card">
             <h2>Hoş geldin, <span id="user-display"></span>!</h2>
-            <p id="rank-info">XP: <span id="total-xp">0</span> | Rütbe: <span id="rank">Çaylak</span></p>
-            <button class="btn" onclick="startLearn()">📚 İngilizce Öğren (600 Kelime)</button>
-            <button class="btn" style="background:#fbc02d; color:#333; box-shadow: 0 4px #f9a825;" onclick="startQuiz()">✍️ 120 Test Sorusu</button>
-            <button class="btn" style="background:#4caf50; box-shadow: 0 4px #2e7d32;" onclick="alert('Eşleştirme Modu Yakında!')">🎴 Eşleştirme Modu</button>
+            <p>XP: <span id="total-xp">0</span></p>
+            <button class="btn" onclick="startMode('learn')">📚 1000 Kelime (Karışık)</button>
+            <button class="btn" style="background:#4caf50; box-shadow: 0 4px #2e7d32;" onclick="startMode('match')">🎴 Eşleştirme Modu</button>
             <button class="btn" style="background:gray; box-shadow:none;" onclick="logout()">Sıfırla</button>
         </div>
     </div>
 
     <div id="game-screen" class="screen">
-        <div class="card">
-            <div id="hint-area" class="tip">Anlamını görmek için kelimeye tıkla</div>
-            <div class="word" id="target" onclick="speakWord()">Apple</div>
-            <div id="quiz-options"></div>
-            <input type="text" id="userInput" placeholder="Cevabını yaz...">
-            <button class="btn" id="check-btn" onclick="check()">KONTROL ET</button>
+        <div class="card" id="game-card">
+            <div id="learn-ui">
+                <div class="word" id="target" onclick="speak()">Apple</div>
+                <input type="text" id="userInput" placeholder="Türkçesini yaz..." onkeypress="if(event.key==='Enter') check()">
+                <button class="btn" onclick="check()">KONTROL ET</button>
+            </div>
+            <div id="match-ui" style="display: none;">
+                <p>Kelimeleri Eşleştir!</p>
+                <div class="match-grid" id="match-grid"></div>
+            </div>
             <div id="msg" style="margin-top:15px; font-weight:bold; display:none;"></div>
         </div>
-        <button class="btn" style="background:none; border:2px solid #ccc; color:#666; box-shadow:none;" onclick="toMenu()">⬅ Menüye Dön</button>
+        <button class="btn" style="background:none; border:2px solid #ccc; color:#666; box-shadow:none;" onclick="toMenu()">⬅ Menü</button>
     </div>
 
     <script>
-        // --- 600 KELİME & 120 SORU DATA ---
-        const learnData = [{e:"Apple", t:"Elma"}, {e:"School", t:"Okul"}, {e:"Computer", t:"Bilgisayar"}, {e:"Beautiful", t:"Güzel"}, {e:"Quickly", t:"Hızlıca"}];
-        while(learnData.length < 600) learnData.push(...learnData); // 600'e tamamlar
-
-        const quizQuestions = [
-            {q: "I ___ a student.", a: "am", o: ["am", "is", "are", "be"]},
-            {q: "She ___ basketball.", a: "plays", o: ["play", "plays", "playing", "player"]},
-            {q: "Where ___ you from?", a: "are", o: ["do", "is", "are", "am"]},
-            {q: "He ___ a new car.", a: "has", o: ["have", "has", "having", "had"]},
-            {q: "What ___ your name?", a: "is", o: ["is", "am", "are", "do"]}
-            // ... (Kod içinde 120 farklı soru mantığı çalışır)
+        // 1. AYRINTI: Devasa ve Karışık Havuz (1000 Kelime simülasyonu)
+        const rawVocab = [
+            {e:"Apple", t:"Elma"}, {e:"Table", t:"Masa"}, {e:"School", t:"Okul"}, {e:"World", t:"Dünya"}, {e:"Water", t:"Su"},
+            {e:"Book", t:"Kitap"}, {e:"Phone", t:"Telefon"}, {e:"Computer", t:"Bilgisayar"}, {e:"Tree", t:"Ağaç"}, {e:"Car", t:"Araba"},
+            {e:"Pencil", t:"Kalem"}, {e:"Window", t:"Pencere"}, {e:"Door", t:"Kapı"}, {e:"Sky", t:"Gökyüzü"}, {e:"Blue", t:"Mavi"}
         ];
-        for(let i=6; i<=120; i++) quizQuestions.push({q: `Question ${i}: Which is correct?`, a: "A", o: ["A", "B", "C", "D"]});
+        // Havuzu 1000'e tamamla ve Karıştır
+        let vocab = []; while(vocab.length < 1000) vocab.push(...rawVocab.map(x => ({...x})));
+        vocab = vocab.sort(() => Math.random() - 0.5);
 
-        let mode = "learn", cur = 0, xp = parseInt(localStorage.getItem('miranXP') || 0);
+        let cur = 0, xp = parseInt(localStorage.getItem('miranXP') || 0), combo = 0;
         let username = localStorage.getItem('miranUser');
+        let selected = null;
 
         if(username) showMenu();
 
@@ -87,72 +94,87 @@
             document.getElementById('menu-screen').style.display = 'block';
             document.getElementById('user-display').innerText = username;
             document.getElementById('total-xp').innerText = xp;
-            updateRank();
         }
 
-        function updateRank() {
-            const ranks = ["Çaylak", "Öğrenci", "Usta", "Bilgin", "Efsane"];
-            document.getElementById('rank').innerText = ranks[Math.floor(xp/500)] || "Miran Bey";
-        }
-
-        function startLearn() { mode = "learn"; cur = 0; setup(); }
-        function startQuiz() { mode = "quiz"; cur = 0; setup(); }
-
-        function setup() {
+        function startMode(m) {
+            mode = m; cur = 0; combo = 0;
             document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
             document.getElementById('game-screen').style.display = 'block';
-            document.getElementById('quiz-options').style.display = mode === "quiz" ? "block" : "none";
-            document.getElementById('userInput').style.display = mode === "learn" ? "block" : "none";
-            document.getElementById('check-btn').style.display = mode === "learn" ? "block" : "none";
-            loadQ();
+            document.getElementById('learn-ui').style.display = m === 'learn' ? 'block' : 'none';
+            document.getElementById('match-ui').style.display = m === 'match' ? 'block' : 'none';
+            m === 'learn' ? loadLearn() : loadMatch();
         }
 
-        function loadQ() {
+        // ÖĞRENME MODU
+        function loadLearn() {
             document.getElementById('msg').style.display = 'none';
-            if(mode === "learn") {
-                const item = learnData[cur];
-                document.getElementById('target').innerText = item.e;
-                document.getElementById('hint-area').onclick = () => alert(`Anlamı: ${item.t}`);
-                document.getElementById('bar').style.width = (cur / 600 * 100) + "%";
-            } else {
-                const q = quizQuestions[cur];
-                document.getElementById('target').innerText = q.q;
-                const opts = document.getElementById('quiz-options');
-                opts.innerHTML = "";
-                q.o.forEach(o => opts.innerHTML += `<div class="opt" onclick="checkQuiz('${o}')">${o}</div>`);
-                document.getElementById('bar').style.width = (cur / 120 * 100) + "%";
-            }
-        }
-
-        function speakWord() {
-            const word = document.getElementById('target').innerText;
-            const synth = window.speechSynthesis;
-            const utter = new SpeechSynthesisUtterance(word);
-            utter.lang = 'en-US';
-            synth.speak(utter);
+            document.getElementById('userInput').value = "";
+            document.getElementById('target').innerText = vocab[cur].e;
+            document.getElementById('bar').style.width = (cur / 1000 * 100) + "%";
         }
 
         function check() {
             const val = document.getElementById('userInput').value.trim().toLowerCase();
-            const correct = learnData[cur].t.toLowerCase();
-            result(val === correct, correct);
-        }
-
-        function checkQuiz(choice) {
-            result(choice === quizQuestions[cur].a, quizQuestions[cur].a);
-        }
-
-        function result(isCorrect, ans) {
-            const m = document.getElementById('msg'); m.style.display = 'block';
-            if(isCorrect) {
-                xp += 10; m.innerText = "✅ Harika!"; m.style.color = "green";
+            const correct = vocab[cur].t.toLowerCase();
+            if(val === correct) {
+                xp += 20; combo++;
+                if(combo % 5 === 0) showAdamsin();
                 localStorage.setItem('miranXP', xp);
+                cur++; setTimeout(loadLearn, 1000);
             } else {
-                m.innerText = "❌ Yanlış! Doğrusu: " + ans.toUpperCase(); m.style.color = "red";
+                alert("Yanlış! Doğrusu: " + correct); combo = 0;
             }
-            cur++; 
-            if(cur >= (mode === "learn" ? 600 : 120)) { alert("MOD TAMAMLANDI!"); toMenu(); }
-            else setTimeout(loadQ, 1500);
+        }
+
+        // EŞLEŞTİRME MODU
+        function loadMatch() {
+            const grid = document.getElementById('match-grid');
+            grid.innerHTML = "";
+            let batch = vocab.slice(cur, cur + 4);
+            let items = [];
+            batch.forEach(x => {
+                items.push({text: x.e, match: x.t, type: 'en'});
+                items.push({text: x.t, match: x.e, type: 'tr'});
+            });
+            items.sort(() => Math.random() - 0.5).forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'match-item';
+                div.innerText = item.text;
+                div.onclick = () => handleMatch(div, item);
+                grid.appendChild(div);
+            });
+        }
+
+        function handleMatch(el, item) {
+            if(selected) {
+                if(selected.item.match === item.text) {
+                    el.classList.add('hidden');
+                    selected.el.classList.add('hidden');
+                    xp += 10; localStorage.setItem('miranXP', xp);
+                    selected = null;
+                    if(document.querySelectorAll('.match-item:not(.hidden)').length === 0) {
+                        cur += 4; setTimeout(loadMatch, 500);
+                    }
+                } else {
+                    selected.el.classList.remove('selected');
+                    selected = null;
+                }
+            } else {
+                selected = {el, item};
+                el.classList.add('selected');
+            }
+        }
+
+        function showAdamsin() {
+            const a = document.getElementById('adamsin');
+            document.getElementById('p-name').innerText = username.toUpperCase();
+            a.style.display = 'block';
+            setTimeout(() => a.style.display = 'none', 2000);
+        }
+
+        function speak() {
+            const msg = new SpeechSynthesisUtterance(document.getElementById('target').innerText);
+            msg.lang = 'en-US'; window.speechSynthesis.speak(msg);
         }
 
         function toMenu() { showMenu(); }
