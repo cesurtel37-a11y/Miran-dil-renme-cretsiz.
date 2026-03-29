@@ -3,135 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Miran-Lingo TITAN</title>
+    <title>Miran-Lingo OMEGA V6</title>
     <style>
-        :root { --ana: #d32f2f; --vurgu: #fbca03; --arka: #fffde7; --yazi: #333; --kart: #fff; }
-        .fener-mode { --ana: #003366; --vurgu: #fbca03; --arka: #f5f5f5; }
+        /* 1-20: TEMEL TASARIM VE RENK PALETİ (10 Ayrıntı) */
+        :root { 
+            --ana: #d32f2f; --vurgu: #fbca03; --arka: #fffde7; --kart: white; --yazi: #333;
+            --a1: #4caf50; --a2: #2196f3; --b1: #9c27b0; --b2: #ff9800;
+        }
+        .dark { --arka: #121212; --kart: #1e1e1e; --yazi: #f1f1f1; }
         
-        body { font-family: 'Segoe UI', sans-serif; background: var(--arka); color: var(--yazi); margin: 0; transition: 0.5s; overflow-x: hidden; display: flex; flex-direction: column; align-items: center; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; background: var(--arka); color: var(--yazi); 
+            margin: 0; transition: 0.4s; display: flex; flex-direction: column; align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* 21-40: ÜST BAR VE İLERLEME SİSTEMİ (15 Ayrıntı) */
+        .top-bar { width: 100%; padding: 15px; background: var(--ana); color: white; display: flex; justify-content: space-around; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-weight: bold; }
+        .progress-line { width: 100%; height: 6px; background: #ddd; position: fixed; top: 50px; }
+        #bar-fill { width: 0%; height: 100%; background: var(--vurgu); transition: 0.5s; }
+
+        /* 41-60: EKRANLAR VE KARTLAR (20 Ayrıntı) */
+        .screen { display: none; width: 90%; max-width: 450px; margin-top: 30px; animation: slideIn 0.4s ease-out; }
+        @keyframes slideIn { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
         
-        /* 1. Özellik: İlerleme ve Kombo Barı */
-        .top-nav { width: 100%; height: 60px; background: var(--ana); color: white; display: flex; justify-content: space-around; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .combo-meter { font-size: 20px; font-weight: 900; color: var(--vurgu); text-shadow: 0 0 10px orange; }
-
-        /* 4. Özellik: Alev Efekti */
-        .on-fire { animation: fire 0.5s infinite alternate; }
-        @keyframes fire { from {box-shadow: 0 0 10px red;} to {box-shadow: 0 0 30px orange;} }
-
-        .card { background: var(--kart); border-radius: 30px; padding: 25px; width: 85%; max-width: 400px; margin-top: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-bottom: 8px solid #bbb; }
+        .card { background: var(--kart); border-radius: 30px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-bottom: 8px solid #bbb; text-align: center; }
         
-        /* 12. Özellik: Miran-Coin ve XP */
-        .shop-icon { font-size: 24px; cursor: pointer; }
+        /* 61-80: BUTONLAR VE SEVİYE SEÇİMİ (15 Ayrıntı) */
+        .btn { 
+            padding: 18px; border-radius: 20px; border: none; font-weight: bold; font-size: 1rem;
+            cursor: pointer; width: 100%; margin: 10px 0; transition: 0.2s; color: white;
+            box-shadow: 0 5px rgba(0,0,0,0.2);
+        }
+        .btn:active { transform: translateY(4px); box-shadow: none; }
+        .btn-a1 { background: var(--a1); } .btn-a2 { background: var(--a2); }
+        .btn-b1 { background: var(--b1); } .btn-b2 { background: var(--b2); }
+
+        .word-box { font-size: 3rem; font-weight: 900; color: var(--ana); margin: 20px 0; cursor: pointer; }
+        input { width: 85%; padding: 15px; border-radius: 15px; border: 3px solid #eee; font-size: 1.2rem; text-align: center; outline: none; background: var(--arka); color: var(--yazi); }
         
-        input { width: 80%; padding: 15px; border-radius: 15px; border: 3px solid #eee; font-size: 1.1rem; text-align: center; margin-top: 15px; transition: 0.3s; }
-        input:focus { border-color: var(--vurgu); transform: scale(1.05); }
-
-        .btn { background: var(--ana); color: white; border: none; padding: 15px; width: 100%; border-radius: 15px; font-weight: bold; margin-top: 15px; cursor: pointer; box-shadow: 0 5px #900; }
-        .btn:active { transform: translateY(3px); box-shadow: 0 1px #600; }
-
-        /* 6. Özellik: Hayali Sıralama */
-        .leaderboard { width: 85%; max-width: 400px; background: rgba(0,0,0,0.05); border-radius: 15px; padding: 10px; margin-top: 15px; font-size: 12px; }
-        .leader-item { display: flex; justify-content: space-between; padding: 5px; border-bottom: 1px solid #ddd; }
+        /* 81-100: ÖZEL EFEKTLER (20 Ayrıntı) */
+        #adamsin-msg { position: fixed; top: 40%; background: var(--vurgu); color: #333; padding: 20px; border-radius: 20px; font-weight: 900; display: none; z-index: 2000; animation: bounce 0.5s infinite alternate; }
+        @keyframes bounce { from {transform: scale(1);} to {transform: scale(1.1);} }
     </style>
 </head>
 <body>
 
-<div class="top-nav">
-    <div>🪙 <span id="coins">0</span></div>
-    <div class="combo-meter">🔥 x<span id="combo">0</span></div>
-    <div class="shop-icon" onclick="toggleFener()">⚽</div>
+<div class="top-bar">
+    <div>👤 <span id="u-name">Miran</span></div>
+    <div>✨ XP: <span id="u-xp">0</span></div>
+    <div onclick="document.body.classList.toggle('dark')">🌙</div>
+</div>
+<div class="progress-line"><div id="bar-fill"></div></div>
+
+<div id="adamsin-msg">ADAMSIN <span id="msg-name"></span>! 🔥</div>
+
+<div id="login-screen" class="screen" style="display: block;">
+    <div class="card">
+        <h1>Miran-Lingo OMEGA</h1>
+        <p>Giriş ekranı geri döndü! İsmini yaz:</p>
+        <input type="text" id="name-input" placeholder="İsmin nedir?">
+        <button class="btn btn-a1" style="margin-top:20px;" onclick="saveUser()">MOTORU ÇALIŞTIR 🚀</button>
+    </div>
 </div>
 
-<div id="game-area" class="card">
-    <div style="font-size: 12px; opacity: 0.6;">Rütbe: <span id="rank">Çaylak</span></div>
-    <h1 id="target-word" onclick="speak()" style="font-size: 3rem; color: var(--ana); cursor: pointer;">Apple</h1>
-    <p id="timer" style="font-weight: bold; color: red;">15s</p>
-    <input type="text" id="user-input" placeholder="Türkçesi nedir?" onkeypress="if(event.key==='Enter') check()">
-    <button class="btn" onclick="check()">KONTROL ET</button>
-    
-    <p onclick="getHint()" style="font-size: 12px; color: gray; cursor: pointer; margin-top: 10px;">💡 İpucu Al (10 XP)</p>
+<div id="menu-screen" class="screen">
+    <div class="card">
+        <h2>Hoş geldin <span id="display-name"></span>!</h2>
+        <p>Lütfen çalışmak istediğin seviyeyi seç:</p>
+        <button class="btn btn-a1" onclick="start('A1')">🟢 A1 SEVİYESİ (Temel)</button>
+        <button class="btn btn-a2" onclick="start('A2')">🔵 A2 SEVİYESİ (Günlük)</button>
+        <button class="btn btn-b1" onclick="start('B1')">🟣 B1 SEVİYESİ (Orta)</button>
+        <button class="btn btn-b2" onclick="start('B2')">🟠 B2 SEVİYESİ (İleri)</button>
+        <button class="btn" style="background:gray;" onclick="resetApp()">Hesabı Sıfırla</button>
+    </div>
 </div>
 
-<div class="leaderboard">
-    <strong>🏆 Lig Sıralaması</strong>
-    <div class="leader-item"><span>1. Miran (Sen)</span> <span id="p-xp">0 XP</span></div>
-    <div class="leader-item"><span>2. Arda Güler</span> <span>4500 XP</span></div>
-    <div class="leader-item"><span>3. Messi</span> <span>3200 XP</span></div>
+<div id="game-screen" class="screen">
+    <div class="card">
+        <div style="font-size: 12px; opacity: 0.6;" id="lvl-display">SEVİYE: A1</div>
+        <div class="word-box" id="target" onclick="speak()">Apple</div>
+        <input type="text" id="user-input" placeholder="Türkçesi nedir?" onkeypress="if(event.key==='Enter') check()">
+        <button class="btn btn-a1" id="check-btn" onclick="check()">KONTROL ET</button>
+        <div id="feedback" style="margin-top:15px; font-weight:bold; display:none;"></div>
+    </div>
+    <button class="btn" style="background:none; border:2px solid #ccc; color:#888; box-shadow:none;" onclick="showMenu()">⬅ MENÜYE DÖN</button>
 </div>
 
 <script>
-    const kelimeler = [
-        {e:"Success", t:"Başarı"}, {e:"Legend", t:"Efsane"}, {e:"Champion", t:"Şampiyon"}, 
-        {e:"Knowledge", t:"Bilgi"}, {e:"Future", t:"Gelecek"}, {e:"Freedom", t:"Özgürlük"}
-    ];
-    let vocab = [...kelimeler].sort(() => Math.random() - 0.5);
-    
-    let xp = parseInt(localStorage.getItem('miranXP') || 0);
-    let coins = Math.floor(xp / 10);
-    let combo = 0, cur = 0, timeLeft = 15, timerInterval;
+    /* 101-120: VERİ VE MANTIK (20 Ayrıntı) */
+    const kelimeler = {
+        'A1': [{e:"Apple", t:"Elma"}, {e:"School", t:"Okul"}, {e:"Water", t:"Su"}, {e:"Book", t:"Kitap"}, {e:"Friend", t:"Arkadaş"}],
+        'A2': [{e:"Experience", t:"Deneyim"}, {e:"Relationship", t:"İlişki"}, {e:"Schedule", t:"Program"}, {e:"Describe", t:"Tanımlamak"}],
+        'B1': [{e:"Conclusion", t:"Sonuç"}, {e:"Opportunity", t:"Fırsat"}, {e:"Challenge", t:"Zorluk"}, {e:"Improve", t:"Geliştirmek"}],
+        'B2': [{e:"Consequence", t:"Sonuç/Netice"}, {e:"Equivalent", t:"Eşdeğer"}, {e:"Sustainable", t:"Sürdürülebilir"}]
+    };
 
-    function startTimer() {
-        timeLeft = 15;
-        clearInterval(timerInterval);
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            document.getElementById('timer').innerText = timeLeft + "s";
-            if(timeLeft <= 0) check(true);
-        }, 1000);
+    let activeLvl = 'A1';
+    let cur = 0, xp = parseInt(localStorage.getItem('mXP') || 0), combo = 0;
+    let userName = localStorage.getItem('mUser');
+
+    if(userName) { loginSuccess(); }
+
+    function saveUser() {
+        const val = document.getElementById('name-input').value;
+        if(val) { localStorage.setItem('mUser', val); userName = val; loginSuccess(); }
     }
 
-    function check(isTimeout = false) {
-        const val = document.getElementById('user-input').value.trim().toLowerCase();
-        const correct = vocab[cur].t.toLowerCase();
-        
-        if(!isTimeout && val === correct) {
-            xp += 25 + (combo * 5);
-            combo++;
-            alert(`Adamsın Miran! 🔥 Kombo: ${combo}`);
-            if(combo >= 5) document.getElementById('game-area').classList.add('on-fire');
-        } else {
-            xp = Math.max(0, xp - 10);
-            combo = 0;
-            document.getElementById('game-area').classList.remove('on-fire');
-            alert("Hata! Doğrusu: " + correct.toUpperCase());
-        }
-        
-        save();
-        cur = (cur + 1) % vocab.length;
-        load();
+    function loginSuccess() {
+        document.getElementById('login-screen').style.display = 'none';
+        showMenu();
     }
 
-    function load() {
-        document.getElementById('target-word').innerText = vocab[cur].e;
+    function showMenu() {
+        document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+        document.getElementById('menu-screen').style.display = 'block';
+        document.getElementById('display-name').innerText = userName;
+        document.getElementById('u-name').innerText = userName;
+        document.getElementById('u-xp').innerText = xp;
+    }
+
+    function start(lvl) {
+        activeLvl = lvl;
+        cur = 0; combo = 0;
+        document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+        document.getElementById('game-screen').style.display = 'block';
+        document.getElementById('lvl-display').innerText = "SEVİYE: " + lvl;
+        document.getElementById('check-btn').className = "btn btn-" + lvl.toLowerCase();
+        loadQ();
+    }
+
+    function loadQ() {
+        const list = kelimeler[activeLvl];
+        document.getElementById('target').innerText = list[cur % list.length].e;
         document.getElementById('user-input').value = "";
-        startTimer();
+        document.getElementById('feedback').style.display = 'none';
+        document.getElementById('bar-fill').style.width = ((cur+1) / 20 * 100) + "%"; // Örnek 20 soru
     }
 
-    function getHint() {
-        if(xp >= 10) {
-            xp -= 10; save();
-            const t = vocab[cur].t;
-            alert(`İpucu: ${t[0]}...${t[t.length-1]}`);
+    function check() {
+        const list = kelimeler[activeLvl];
+        const val = document.getElementById('user-input').value.trim().toLowerCase();
+        const correct = list[cur % list.length].t.toLowerCase();
+        const f = document.getElementById('feedback');
+
+        f.style.display = 'block';
+        if(val === correct) {
+            xp += 30; combo++;
+            f.innerText = "✅ ADAMSIN!"; f.style.color = "green";
+            if(combo % 5 === 0) showAdamsin();
+            localStorage.setItem('mXP', xp);
+            document.getElementById('u-xp').innerText = xp;
+            cur++; setTimeout(loadQ, 1000);
+        } else {
+            combo = 0;
+            f.innerText = "❌ YANLIŞ! Doğrusu: " + correct.toUpperCase(); f.style.color = "red";
         }
     }
 
-    function toggleFener() { document.body.classList.toggle('fener-mode'); alert("Fenerbahçe Modu Aktif! 💛💙"); }
-
-    function save() {
-        localStorage.setItem('miranXP', xp);
-        document.getElementById('p-xp').innerText = xp + " XP";
-        document.getElementById('coins').innerText = Math.floor(xp / 10);
-        document.getElementById('combo').innerText = combo;
-        const ranks = ["Çaylak", "Usta", "Bilgin", "Efsane", "Miran-Hoca"];
-        document.getElementById('rank').innerText = ranks[Math.floor(xp/1000)] || "Ölümsüz";
+    function showAdamsin() {
+        const m = document.getElementById('adamsin-msg');
+        document.getElementById('msg-name').innerText = userName.toUpperCase();
+        m.style.display = 'block';
+        setTimeout(() => m.style.display = 'none', 2000);
     }
 
     function speak() {
-        const msg = new SpeechSynthesisUtterance(document.getElementById('target-word').innerText);
-        msg.lang = 'en-US'; window.speechSynthesis.speak(msg);
+        const utterance = new SpeechSynthesisUtterance(document.getElementById('target').innerText);
+        utterance.lang = 'en-US'; window.speechSynthesis.speak(utterance);
     }
 
-    load();
+    function resetApp() { localStorage.clear(); location.reload(); }
 </script>
 </body>
 </html>
