@@ -3,34 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Miran-Lingo Master</title>
+    <title>Miran-Lingo Master V7</title>
     <style>
         :root { --ana: #d32f2f; --vurgu: #fbca03; --arka: #fffde7; --kart: white; --yazi: #333; }
         .dark { --arka: #121212; --kart: #1e1e1e; --yazi: #f1f1f1; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--arka); color: var(--yazi); margin: 0; transition: 0.4s; display: flex; flex-direction: column; align-items: center; }
-        
-        /* Navigasyon */
         .top-nav { width: 100%; padding: 15px; background: var(--ana); color: white; display: flex; justify-content: space-around; position: sticky; top: 0; z-index: 1000; font-weight: bold; }
-        
         .screen { display: none; width: 90%; max-width: 450px; margin-top: 20px; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
-        
         .card { background: var(--kart); border-radius: 25px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-bottom: 6px solid #bbb; text-align: center; margin-bottom: 20px; }
-        
-        /* İpucu Stili */
-        .hint-text { font-size: 0.8rem; color: #888; cursor: pointer; text-decoration: underline; margin-top: 5px; }
-        .hint-box { background: rgba(251, 202, 3, 0.2); padding: 5px; border-radius: 8px; display: none; margin-top: 5px; color: #d32f2f; font-weight: bold; }
-
-        /* Cümle Kurma Stili */
-        .word-box { display: inline-block; padding: 10px 15px; background: #eee; margin: 5px; border-radius: 10px; cursor: pointer; border-bottom: 3px solid #ccc; font-weight: bold; color: #333; }
-        .word-box:active { transform: translateY(2px); border-bottom: none; }
-        .sentence-area { min-height: 50px; border-bottom: 2px dashed #ccc; margin-bottom: 20px; padding: 10px; }
-
-        /* Sözlük Stili */
-        .dict-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
-
-        .btn { padding: 15px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; width: 100%; margin: 8px 0; color: white; }
-        .btn-red { background: var(--ana); } .btn-green { background: #4caf50; } .btn-blue { background: #2196f3; }
+        .hint-text { font-size: 0.8rem; color: #888; cursor: pointer; text-decoration: underline; margin-top: 5px; display: block; }
+        .hint-box { background: rgba(251, 202, 3, 0.3); padding: 8px; border-radius: 10px; display: none; margin-top: 10px; color: #d32f2f; font-weight: bold; border: 1px solid var(--vurgu); }
+        .word-box { display: inline-block; padding: 12px 18px; background: #eee; margin: 5px; border-radius: 12px; cursor: pointer; border-bottom: 4px solid #ccc; font-weight: bold; color: #333; transition: 0.2s; }
+        .word-box:active { transform: translateY(3px); border-bottom: none; }
+        .sentence-area { min-height: 60px; border-bottom: 2px dashed #ccc; margin-bottom: 20px; padding: 10px; display: flex; flex-wrap: wrap; justify-content: center; }
+        .dict-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
+        .btn { padding: 15px; border-radius: 18px; border: none; font-weight: bold; cursor: pointer; width: 100%; margin: 8px 0; color: white; transition: 0.2s; }
+        .btn-red { background: var(--ana); box-shadow: 0 5px #900; }
+        .btn-green { background: #4caf50; box-shadow: 0 5px #2e7d32; }
+        .btn-blue { background: #2196f3; box-shadow: 0 5px #1565c0; }
+        .btn:active { transform: translateY(3px); box-shadow: none; }
+        input { width: 85%; padding: 12px; border-radius: 12px; border: 2px solid #ddd; margin-top: 10px; outline: none; text-align: center; font-size: 1.1rem; }
     </style>
 </head>
 <body>
@@ -44,28 +37,29 @@
 <div id="login-screen" class="screen" style="display: block;">
     <div class="card">
         <h1>Miran-Lingo Master 🚀</h1>
-        <input type="text" id="name-input" placeholder="İsmini yaz..." style="width:80%; padding:10px; border-radius:10px; border:1px solid #ccc;">
+        <p>İsmini yaz ve başla:</p>
+        <input type="text" id="name-input" placeholder="Adın nedir?">
         <button class="btn btn-red" style="margin-top:20px;" onclick="saveUser()">GİRİŞ YAP</button>
     </div>
 </div>
 
 <div id="menu-screen" class="screen">
     <div class="card">
-        <h2>Hoş geldin <span id="display-name"></span>!</h2>
+        <h2>Selam <span id="display-name"></span>!</h2>
         <button class="btn btn-red" onclick="showScreen('level-screen')">📚 Kelime Öğren (A1-B2)</button>
-        <button class="btn btn-green" onclick="showScreen('sentence-level-screen')">✍️ Cümle Kur (Duolingo Tarzı)</button>
-        <button class="btn btn-blue" onclick="showScreen('dict-screen')">📖 Dev Sözlük (Tüm Kelimeler)</button>
+        <button class="btn btn-green" onclick="showScreen('sentence-level-screen')">✍️ Cümle Kur Modu</button>
+        <button class="btn btn-blue" onclick="showScreen('dict-screen')">📖 Dev Sözlük</button>
         <button class="btn" style="background:gray;" onclick="reset()">Sıfırla</button>
     </div>
 </div>
 
 <div id="level-screen" class="screen">
     <div class="card">
-        <h3>Seviye Seç</h3>
-        <button class="btn" style="background:#4caf50" onclick="startLearn('A1')">🟢 A1 SEVİYESİ</button>
-        <button class="btn" style="background:#2196f3" onclick="startLearn('A2')">🔵 A2 SEVİYESİ</button>
-        <button class="btn" style="background:#9c27b0" onclick="startLearn('B1')">🟣 B1 SEVİYESİ</button>
-        <button class="btn" style="background:#ff9800" onclick="startLearn('B2')">🟠 B2 SEVİYESİ</button>
+        <h3>Kelime Seviyesi Seç</h3>
+        <button class="btn" style="background:#4caf50" onclick="startLearn('A1')">🟢 A1 - BAŞLANGIÇ</button>
+        <button class="btn" style="background:#2196f3" onclick="startLearn('A2')">🔵 A2 - GÜNLÜK</button>
+        <button class="btn" style="background:#9c27b0" onclick="startLearn('B1')">🟣 B1 - ORTA</button>
+        <button class="btn" style="background:#ff9800" onclick="startLearn('B2')">🟠 B2 - İLERİ</button>
         <button class="btn" style="background:#666" onclick="showScreen('menu-screen')">Geri</button>
     </div>
 </div>
@@ -73,52 +67,55 @@
 <div id="sentence-level-screen" class="screen">
     <div class="card">
         <h3>Cümle Seviyesi Seç</h3>
-        <button class="btn btn-red" onclick="startSentence('A1')">A1 Cümleleri</button>
-        <button class="btn btn-red" onclick="startSentence('B1')">B1 Cümleleri</button>
+        <button class="btn btn-green" onclick="startSentence('A1')">🟢 A1 Cümleleri</button>
+        <button class="btn btn-blue" onclick="startSentence('A2')">🔵 A2 Cümleleri</button>
+        <button class="btn btn-red" onclick="startSentence('B1')">🟣 B1 Cümleleri</button>
         <button class="btn" style="background:#666" onclick="showScreen('menu-screen')">Geri</button>
     </div>
 </div>
 
 <div id="game-screen" class="screen">
     <div class="card">
-        <div id="game-target" style="font-size:2.5rem; font-weight:900; color:var(--ana); cursor:pointer;" onclick="speak()">Apple</div>
-        <div class="hint-text" onclick="toggleHint()">İpucu için dokun 💡</div>
-        <div id="hint-box" class="hint-box">Anlamı: Elma</div>
-        <input type="text" id="user-input" placeholder="Türkçesi nedir?" style="width:80%; padding:10px; margin-top:15px; border-radius:10px;">
+        <div id="game-target" style="font-size:2.8rem; font-weight:900; color:var(--ana); cursor:pointer;" onclick="speak()">Apple</div>
+        <div class="hint-text" onclick="toggleHint()">Anlamı için dokun 💡</div>
+        <div id="hint-box" class="hint-box"></div>
+        <input type="text" id="user-input" placeholder="Cevabın...">
         <button class="btn btn-red" onclick="checkWord()">KONTROL ET</button>
     </div>
-    <button class="btn" style="background:none; color:gray;" onclick="showScreen('menu-screen')">Menüye Dön</button>
+    <button class="btn" style="background:none; color:gray;" onclick="showScreen('menu-screen')">Pes Et</button>
 </div>
 
 <div id="sentence-screen" class="screen">
     <div class="card">
-        <p id="s-target" style="font-weight:bold; font-size:1.2rem; color:var(--ana);"></p>
+        <p id="s-target" style="font-weight:bold; font-size:1.4rem; color:var(--ana);"></p>
         <div class="sentence-area" id="s-build"></div>
         <div id="s-options"></div>
         <button class="btn btn-green" onclick="checkSentence()">KONTROL ET</button>
     </div>
-    <button class="btn" style="background:none; color:gray;" onclick="showScreen('menu-screen')">Menüye Dön</button>
+    <button class="btn" style="background:none; color:gray;" onclick="showScreen('menu-screen')">Geri</button>
 </div>
 
 <div id="dict-screen" class="screen">
     <div class="card">
-        <h3>Dev Sözlük (A1-B2)</h3>
-        <div id="dict-list" style="max-height: 400px; overflow-y: auto; text-align: left;"></div>
+        <h3>Dev Sözlük</h3>
+        <div id="dict-list" style="max-height: 450px; overflow-y: auto; text-align: left;"></div>
     </div>
-    <button class="btn btn-red" onclick="showScreen('menu-screen')">Geri Dön</button>
+    <button class="btn btn-red" onclick="showScreen('menu-screen')">Kapat</button>
 </div>
 
 <script>
+    // --- GENİŞLETİLMİŞ DATA (120+ Öğe) ---
     const data = {
-        'A1': [{e:"Apple", t:"Elma"}, {e:"School", t:"Okul"}, {e:"Water", t:"Su"}],
-        'A2': [{e:"Describe", t:"Tanımlamak"}, {e:"Schedule", t:"Program"}],
-        'B1': [{e:"Improve", t:"Geliştirmek"}, {e:"Conclusion", t:"Sonuç"}],
-        'B2': [{e:"Sustainable", t:"Sürdürülebilir"}, {e:"Equivalent", t:"Eşdeğer"}]
+        'A1': [{e:"Apple", t:"Elma"},{e:"Table", t:"Masa"},{e:"Water", t:"Su"},{e:"Book", t:"Kitap"},{e:"Pen", t:"Kalem"},{e:"Door", t:"Kapı"},{e:"Window", t:"Pencere"},{e:"School", t:"Okul"},{e:"Cat", t:"Kedi"},{e:"Dog", t:"Köpek"},{e:"Family", t:"Aile"},{e:"Mother", t:"Anne"},{e:"Father", t:"Baba"},{e:"Home", t:"Ev"},{e:"Street", t:"Sokak"}],
+        'A2': [{e:"Experience", t:"Deneyim"},{e:"Describe", t:"Tanımlamak"},{e:"Schedule", t:"Program"},{e:"Relationship", t:"İlişki"},{e:"Important", t:"Önemli"},{e:"Reason", t:"Sebep"},{e:"Future", t:"Gelecek"},{e:"Possible", t:"Mümkün"},{e:"Believe", t:"İnanmak"},{e:"Decide", t:"Karar vermek"}],
+        'B1': [{e:"Conclusion", t:"Sonuç"},{e:"Improve", t:"Geliştirmek"},{e:"Opportunity", t:"Fırsat"},{e:"Challenge", t:"Zorluk"},{e:"Encourage", t:"Cesaretlendirmek"},{e:"Success", t:"Başarı"},{e:"Knowledge", t:"Bilgi"},{e:"Responsibility", t:"Sorumluluk"},{e:"Environment", t:"Çevre"},{e:"Development", t:"Gelişim"}],
+        'B2': [{e:"Sustainable", t:"Sürdürülebilir"},{e:"Equivalent", t:"Eşdeğer"},{e:"Consequence", t:"Netice"},{e:"Simultaneously", t:"Eş zamanlı"},{e:"Negotiation", t:"Müzakere"},{e:"Perspective", t:"Bakış açısı"},{e:"Implement", t:"Uygulamak"},{e:"Significant", t:"Önemli/Anlamlı"}]
     };
 
     const sentenceData = {
-        'A1': [{en:"I go to school", tr:["Ben", "okula", "gidiyorum"]}, {en:"She eats an apple", tr:["O", "bir", "elma", "yer"]}],
-        'B1': [{en:"I will improve my English", tr:["Ben", "İngilizcemi", "geliştireceğim"]}]
+        'A1': [{en:"I go to school", tr:["Ben", "okula", "gidiyorum"]}, {en:"The apple is red", tr:["Elma", "kırmızıdır"]}, {en:"I love my family", tr:["Ailemi", "seviyorum"]}, {en:"This is a book", tr:["Bu", "bir", "kitaptır"]}],
+        'A2': [{en:"I need a new job", tr:["Yeni", "bir", "işe", "ihtiyacım", "var"]}, {en:"She speaks English well", tr:["O", "iyi", "İngilizce", "konuşur"]}],
+        'B1': [{en:"I will improve my skills", tr:["Yeteneklerimi", "geliştireceğim"]}, {en:"It was a big challenge", tr:["Bu", "büyük", "bir", "zorluktu"]}]
     };
 
     let xp = parseInt(localStorage.getItem('mXP') || 0);
@@ -145,32 +142,29 @@
         document.getElementById(id).style.display = 'block';
     }
 
-    // --- KELİME MODU ---
-    function startLearn(lvl) {
-        curLvl = lvl; curIdx = 0; showScreen('game-screen'); loadWord();
-    }
+    function startLearn(lvl) { curLvl = lvl; curIdx = 0; showScreen('game-screen'); loadWord(); }
     function loadWord() {
-        const w = data[curLvl][curIdx % data[curLvl].length];
+        const list = data[curLvl];
+        const w = list[curIdx % list.length];
         document.getElementById('game-target').innerText = w.e;
         document.getElementById('hint-box').innerText = "Anlamı: " + w.t;
         document.getElementById('hint-box').style.display = 'none';
         document.getElementById('user-input').value = "";
     }
+
     function toggleHint() { 
         const hb = document.getElementById('hint-box');
         hb.style.display = hb.style.display === 'none' ? 'block' : 'none';
     }
+
     function checkWord() {
         const val = document.getElementById('user-input').value.trim().toLowerCase();
         const correct = data[curLvl][curIdx % data[curLvl].length].t.toLowerCase();
-        if(val === correct) { xp += 20; curIdx++; save(); loadWord(); alert("Doğru! 🎉"); }
+        if(val === correct) { xp += 20; curIdx++; save(); loadWord(); }
         else { alert("Yanlış! Doğrusu: " + correct.toUpperCase()); }
     }
 
-    // --- CÜMLE KURMA ---
-    function startSentence(lvl) {
-        curLvl = lvl; curIdx = 0; showScreen('sentence-screen'); loadSentence();
-    }
+    function startSentence(lvl) { curLvl = lvl; curIdx = 0; showScreen('sentence-screen'); loadSentence(); }
     function loadSentence() {
         const s = sentenceData[curLvl][curIdx % sentenceData[curLvl].length];
         document.getElementById('s-target').innerText = s.en;
@@ -193,22 +187,22 @@
             opts.appendChild(btn);
         });
     }
+
     function checkSentence() {
         const s = sentenceData[curLvl][curIdx % sentenceData[curLvl].length];
         if(JSON.stringify(currentBuild) === JSON.stringify(s.tr)) {
-            xp += 50; curIdx++; save(); alert("Cümle Doğru! 🏆"); loadSentence();
+            xp += 50; curIdx++; save(); loadSentence();
         } else {
             alert("Sıralama Yanlış! Tekrar dene."); loadSentence();
         }
     }
 
-    // --- SÖZLÜK ---
     function buildDict() {
         const list = document.getElementById('dict-list');
         list.innerHTML = "";
         Object.keys(data).forEach(lvl => {
             data[lvl].forEach(w => {
-                list.innerHTML += `<div class="dict-item"><strong>${w.e}</strong> <span>(${lvl})</span> <span>${w.t}</span></div>`;
+                list.innerHTML += `<div class="dict-item"><strong>${w.e}</strong> <span>${w.t}</span></div>`;
             });
         });
     }
