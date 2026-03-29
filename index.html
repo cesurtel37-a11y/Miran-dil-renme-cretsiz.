@@ -3,250 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Miran-Lingo Ultimate V5</title>
+    <title>Miran-Lingo TITAN</title>
     <style>
-        /* 1-15: TEMEL RENKLER VE DÜZEN (8 Ayrıntı) */
-        :root { 
-            --ana: #d32f2f; --vurgu: #fbc02d; --arka: #fffde7; --kart: white; --yazi: #333;
-            --dogru: #4caf50; --yanlis: #f44336;
-        }
-        .dark-mode { --arka: #121212; --kart: #1e1e1e; --yazi: #f1f1f1; }
+        :root { --ana: #d32f2f; --vurgu: #fbca03; --arka: #fffde7; --yazi: #333; --kart: #fff; }
+        .fener-mode { --ana: #003366; --vurgu: #fbca03; --arka: #f5f5f5; }
         
-        /* 16-30: ANİMASYONLAR (10 Ayrıntı) */
-        @keyframes pop { 0% {transform: scale(0.9);} 100% {transform: scale(1);} }
-        @keyframes shake { 0%, 100% {transform: translateX(0);} 20% {transform: translateX(-10px);} 80% {transform: translateX(10px);} }
-        @keyframes rainbow { 0% {border-color: red;} 33% {border-color: yellow;} 66% {border-color: blue;} 100% {border-color: red;} }
-
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: var(--arka); color: var(--yazi); margin: 0; 
-            transition: background 0.5s, color 0.5s; 
-            display: flex; flex-direction: column; align-items: center;
-            -webkit-user-select: none;
-        }
-
-        /* 31-45: UI ELEMENTLERİ (15 Ayrıntı) */
-        .progress-container { width: 100%; height: 10px; background: #ddd; position: fixed; top: 0; z-index: 1000; }
-        #progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--vurgu), #ff9800); transition: 0.4s ease-out; }
-
-        .stats-bar { width: 90%; display: flex; justify-content: space-between; padding: 20px; font-weight: bold; font-size: 14px; margin-top: 15px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--arka); color: var(--yazi); margin: 0; transition: 0.5s; overflow-x: hidden; display: flex; flex-direction: column; align-items: center; }
         
-        .card { 
-            background: var(--kart); border-radius: 35px; padding: 30px; 
-            width: 85%; max-width: 400px; margin-top: 20px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
-            border-bottom: 10px solid #bbb; position: relative;
-            animation: pop 0.3s ease;
-        }
-        .rainbow-border { animation: rainbow 2s infinite; border-width: 5px; border-style: solid; }
+        /* 1. Özellik: İlerleme ve Kombo Barı */
+        .top-nav { width: 100%; height: 60px; background: var(--ana); color: white; display: flex; justify-content: space-around; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .combo-meter { font-size: 20px; font-weight: 900; color: var(--vurgu); text-shadow: 0 0 10px orange; }
 
-        /* 46-60: BUTONLAR VE INPUT (12 Ayrıntı) */
-        .word-display { font-size: 2.8rem; font-weight: 900; color: var(--ana); margin: 20px 0; cursor: pointer; text-shadow: 2px 2px rgba(0,0,0,0.05); }
-        input { 
-            width: 90%; padding: 18px; border-radius: 20px; border: 3px solid #eee; 
-            font-size: 1.2rem; text-align: center; outline: none; 
-            transition: 0.3s; background: var(--arka); color: var(--yazi);
-        }
-        input:focus { border-color: var(--vurgu); transform: translateY(-2px); }
+        /* 4. Özellik: Alev Efekti */
+        .on-fire { animation: fire 0.5s infinite alternate; }
+        @keyframes fire { from {box-shadow: 0 0 10px red;} to {box-shadow: 0 0 30px orange;} }
 
-        .main-btn { 
-            background: var(--ana); color: white; border: none; padding: 18px; 
-            width: 100%; border-radius: 20px; font-size: 1.3rem; font-weight: bold; 
-            margin-top: 20px; cursor: pointer; box-shadow: 0 6px #b71c1c;
-            transition: 0.1s;
-        }
-        .main-btn:active { transform: translateY(4px); box-shadow: 0 2px #b71c1c; }
+        .card { background: var(--kart); border-radius: 30px; padding: 25px; width: 85%; max-width: 400px; margin-top: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-bottom: 8px solid #bbb; }
+        
+        /* 12. Özellik: Miran-Coin ve XP */
+        .shop-icon { font-size: 24px; cursor: pointer; }
+        
+        input { width: 80%; padding: 15px; border-radius: 15px; border: 3px solid #eee; font-size: 1.1rem; text-align: center; margin-top: 15px; transition: 0.3s; }
+        input:focus { border-color: var(--vurgu); transform: scale(1.05); }
 
-        /* 61-80: EŞLEŞTİRME MODU (20 Ayrıntı) */
-        .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-        .match-box { 
-            background: var(--kart); padding: 20px; border-radius: 15px; 
-            border: 2px solid #ddd; cursor: pointer; font-weight: bold;
-            transition: 0.2s; font-size: 14px;
-        }
-        .match-selected { background: var(--vurgu); border-color: var(--ana); color: #333; }
-        .match-correct { background: var(--dogru); color: white; transform: scale(0); transition: 0.5s; }
+        .btn { background: var(--ana); color: white; border: none; padding: 15px; width: 100%; border-radius: 15px; font-weight: bold; margin-top: 15px; cursor: pointer; box-shadow: 0 5px #900; }
+        .btn:active { transform: translateY(3px); box-shadow: 0 1px #600; }
 
-        /* 81-100: POPUP VE ÖZEL MESAJLAR (20 Ayrıntı) */
-        #special-msg { 
-            position: fixed; top: 40%; background: var(--vurgu); color: #333; 
-            padding: 20px; border-radius: 20px; font-weight: 900; 
-            display: none; z-index: 2000; box-shadow: 0 0 50px rgba(0,0,0,0.3);
-            animation: shake 0.5s infinite;
-        }
+        /* 6. Özellik: Hayali Sıralama */
+        .leaderboard { width: 85%; max-width: 400px; background: rgba(0,0,0,0.05); border-radius: 15px; padding: 10px; margin-top: 15px; font-size: 12px; }
+        .leader-item { display: flex; justify-content: space-between; padding: 5px; border-bottom: 1px solid #ddd; }
     </style>
 </head>
 <body>
 
-<div class="progress-container"><div id="progress-bar"></div></div>
-<div id="special-msg">ADAMSIN <span id="p-name"></span>! 🔥</div>
-
-<div class="stats-bar">
-    <div>❤️ <span id="lives">5</span></div>
-    <div>🏆 LİG: <span id="league">Bronz</span></div>
-    <div>✨ XP: <span id="xp-display">0</span></div>
-    <div onclick="toggleTheme()" style="cursor:pointer;">🌙</div>
+<div class="top-nav">
+    <div>🪙 <span id="coins">0</span></div>
+    <div class="combo-meter">🔥 x<span id="combo">0</span></div>
+    <div class="shop-icon" onclick="toggleFener()">⚽</div>
 </div>
 
-<div id="login-screen" style="width: 100%; display: flex; flex-direction: column; align-items: center; margin-top: 50px;">
-    <div class="card">
-        <h1>Miran-Lingo OS</h1>
-        <p>Dünya üzerindeki en iyi dil eğitimine hazır mısın?</p>
-        <input type="text" id="username-input" placeholder="Adını buraya kazı...">
-        <button class="main-btn" onclick="initApp()">MOTORU ÇALIŞTIR 🚀</button>
-    </div>
+<div id="game-area" class="card">
+    <div style="font-size: 12px; opacity: 0.6;">Rütbe: <span id="rank">Çaylak</span></div>
+    <h1 id="target-word" onclick="speak()" style="font-size: 3rem; color: var(--ana); cursor: pointer;">Apple</h1>
+    <p id="timer" style="font-weight: bold; color: red;">15s</p>
+    <input type="text" id="user-input" placeholder="Türkçesi nedir?" onkeypress="if(event.key==='Enter') check()">
+    <button class="btn" onclick="check()">KONTROL ET</button>
+    
+    <p onclick="getHint()" style="font-size: 12px; color: gray; cursor: pointer; margin-top: 10px;">💡 İpucu Al (10 XP)</p>
 </div>
 
-<div id="menu-screen" style="display: none; width: 100%; flex-direction: column; align-items: center; margin-top: 30px;">
-    <div class="card">
-        <h2>Selam <span id="user-name-display"></span>!</h2>
-        <button class="main-btn" onclick="startMode('learn')">📚 1000 KELİME MODU</button>
-        <button class="main-btn" style="background:#4caf50; box-shadow:0 6px #2e7d32;" onclick="startMode('match')">🎴 EŞLEŞTİRME MODU</button>
-        <button class="main-btn" style="background:#2196f3; box-shadow:0 6px #1565c0;" onclick="alert('Challenge Modu Yakında!')">⚡ CHALLENGE</button>
-        <p style="font-size: 12px; margin-top: 15px; opacity: 0.6;">Versiyon: 5.0.1 (Ultimate)</p>
-    </div>
-</div>
-
-<div id="game-screen" style="display: none; width: 100%; flex-direction: column; align-items: center;">
-    <div class="card" id="main-card">
-        <div id="learn-ui">
-            <div style="font-size: 12px; opacity: 0.7;">Soru: <span id="q-count">1</span>/1000</div>
-            <div class="word-display" id="target-word" onclick="hear()">Apple</div>
-            <input type="text" id="user-input" placeholder="Türkçesi nedir?" autocomplete="off">
-            <button class="main-btn" onclick="checkLearn()">KONTROL ET</button>
-        </div>
-        <div id="match-ui" style="display: none;">
-            <p>Hızlıca Eşleştir!</p>
-            <div class="match-grid" id="match-area"></div>
-        </div>
-    </div>
-    <button class="main-btn" style="width: 50%; background:none; border:2px solid #ccc; color:#888; box-shadow:none;" onclick="goMenu()">ANA MENÜ</button>
+<div class="leaderboard">
+    <strong>🏆 Lig Sıralaması</strong>
+    <div class="leader-item"><span>1. Miran (Sen)</span> <span id="p-xp">0 XP</span></div>
+    <div class="leader-item"><span>2. Arda Güler</span> <span>4500 XP</span></div>
+    <div class="leader-item"><span>3. Messi</span> <span>3200 XP</span></div>
 </div>
 
 <script>
-    /* 101-120: JAVASCRIPT MANTIĞI VE 1000 KELİME (20 Ayrıntı) */
-    const rawData = [
-        {e:"Apple", t:"Elma"}, {e:"Table", t:"Masa"}, {e:"School", t:"Okul"}, {e:"Book", t:"Kitap"}, {e:"Water", t:"Su"},
-        {e:"Success", t:"Başarı"}, {e:"Legend", t:"Efsane"}, {e:"Champion", t:"Şampiyon"}, {e:"Hard", t:"Zor"}, {e:"Easy", t:"Kolay"},
-        {e:"Money", t:"Para"}, {e:"Family", t:"Aile"}, {e:"Future", t:"Gelecek"}, {e:"Computer", t:"Bilgisayar"}, {e:"Play", t:"Oynamak"}
+    const kelimeler = [
+        {e:"Success", t:"Başarı"}, {e:"Legend", t:"Efsane"}, {e:"Champion", t:"Şampiyon"}, 
+        {e:"Knowledge", t:"Bilgi"}, {e:"Future", t:"Gelecek"}, {e:"Freedom", t:"Özgürlük"}
     ];
-    let vocab = []; while(vocab.length < 1000) vocab.push(...rawData.map(x => ({...x})));
-    // 100. Ayrıntı: Mükemmel Karıştırma (Shuffle)
-    vocab = vocab.sort(() => Math.random() - 0.5);
-
+    let vocab = [...kelimeler].sort(() => Math.random() - 0.5);
+    
     let xp = parseInt(localStorage.getItem('miranXP') || 0);
-    let user = localStorage.getItem('miranUser');
-    let cur = 0, combo = 0, selected = null;
+    let coins = Math.floor(xp / 10);
+    let combo = 0, cur = 0, timeLeft = 15, timerInterval;
 
-    if(user) { document.getElementById('login-screen').style.display = 'none'; showMenu(); }
-
-    function initApp() {
-        const val = document.getElementById('username-input').value;
-        if(val) { 
-            localStorage.setItem('miranUser', val); user = val;
-            document.getElementById('login-screen').style.display = 'none';
-            showMenu();
-        }
+    function startTimer() {
+        timeLeft = 15;
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer').innerText = timeLeft + "s";
+            if(timeLeft <= 0) check(true);
+        }, 1000);
     }
 
-    function showMenu() {
-        document.getElementById('menu-screen').style.display = 'flex';
-        document.getElementById('game-screen').style.display = 'none';
-        document.getElementById('user-name-display').innerText = user;
-        document.getElementById('xp-display').innerText = xp;
-        updateLeague();
-    }
-
-    function updateLeague() {
-        const leagues = ["Bronz", "Gümüş", "Altın", "Platin", "Elmas", "Efsane", "Miran"];
-        document.getElementById('league').innerText = leagues[Math.floor(xp/1000)] || "Kral";
-    }
-
-    function startMode(m) {
-        document.getElementById('menu-screen').style.display = 'none';
-        document.getElementById('game-screen').style.display = 'flex';
-        if(m === 'learn') {
-            document.getElementById('learn-ui').style.display = 'block';
-            document.getElementById('match-ui').style.display = 'none';
-            loadLearn();
-        } else {
-            document.getElementById('learn-ui').style.display = 'none';
-            document.getElementById('match-ui').style.display = 'block';
-            loadMatch();
-        }
-    }
-
-    function loadLearn() {
-        document.getElementById('target-word').innerText = vocab[cur].e;
-        document.getElementById('user-input').value = "";
-        document.getElementById('progress-bar').style.width = (cur / 1000 * 100) + "%";
-        document.getElementById('q-count').innerText = cur + 1;
-    }
-
-    function checkLearn() {
+    function check(isTimeout = false) {
         const val = document.getElementById('user-input').value.trim().toLowerCase();
         const correct = vocab[cur].t.toLowerCase();
-        if(val === correct) {
-            xp += 25; combo++;
-            if(combo % 5 === 0) showAdamsin();
-            save(); cur++; loadLearn();
-            document.body.style.background = "#e8f5e9";
-            setTimeout(() => document.body.style.background = "", 500);
+        
+        if(!isTimeout && val === correct) {
+            xp += 25 + (combo * 5);
+            combo++;
+            alert(`Adamsın Miran! 🔥 Kombo: ${combo}`);
+            if(combo >= 5) document.getElementById('game-area').classList.add('on-fire');
         } else {
-            combo = 0; document.getElementById('main-card').classList.add('shake');
-            document.body.style.background = "#ffebee";
-            setTimeout(() => { document.getElementById('main-card').classList.remove('shake'); document.body.style.background = ""; }, 500);
-            alert("DOĞRUSU: " + correct.toUpperCase());
+            xp = Math.max(0, xp - 10);
+            combo = 0;
+            document.getElementById('game-area').classList.remove('on-fire');
+            alert("Hata! Doğrusu: " + correct.toUpperCase());
+        }
+        
+        save();
+        cur = (cur + 1) % vocab.length;
+        load();
+    }
+
+    function load() {
+        document.getElementById('target-word').innerText = vocab[cur].e;
+        document.getElementById('user-input').value = "";
+        startTimer();
+    }
+
+    function getHint() {
+        if(xp >= 10) {
+            xp -= 10; save();
+            const t = vocab[cur].t;
+            alert(`İpucu: ${t[0]}...${t[t.length-1]}`);
         }
     }
 
-    function loadMatch() {
-        const area = document.getElementById('match-area');
-        area.innerHTML = "";
-        let batch = vocab.slice(cur, cur + 4);
-        let items = [];
-        batch.forEach(v => {
-            items.push({txt: v.e, pair: v.t}); items.push({txt: v.t, pair: v.e});
-        });
-        items.sort(() => Math.random() - 0.5).forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'match-box';
-            div.innerText = item.txt;
-            div.onclick = () => {
-                if(selected) {
-                    if(selected.item.pair === item.txt) {
-                        div.className = 'match-box match-correct';
-                        selected.el.className = 'match-box match-correct';
-                        xp += 15; save();
-                        if(document.querySelectorAll('.match-box:not(.match-correct)').length === 0) {
-                            cur += 4; setTimeout(loadMatch, 600);
-                        }
-                    } else { selected.el.classList.remove('match-selected'); }
-                    selected = null;
-                } else {
-                    selected = {el: div, item: item};
-                    div.classList.add('match-selected');
-                }
-            };
-            area.appendChild(div);
-        });
+    function toggleFener() { document.body.classList.toggle('fener-mode'); alert("Fenerbahçe Modu Aktif! 💛💙"); }
+
+    function save() {
+        localStorage.setItem('miranXP', xp);
+        document.getElementById('p-xp').innerText = xp + " XP";
+        document.getElementById('coins').innerText = Math.floor(xp / 10);
+        document.getElementById('combo').innerText = combo;
+        const ranks = ["Çaylak", "Usta", "Bilgin", "Efsane", "Miran-Hoca"];
+        document.getElementById('rank').innerText = ranks[Math.floor(xp/1000)] || "Ölümsüz";
     }
 
-    function showAdamsin() {
-        const m = document.getElementById('special-msg');
-        document.getElementById('p-name').innerText = user.toUpperCase();
-        m.style.display = 'block';
-        setTimeout(() => m.style.display = 'none', 2000);
+    function speak() {
+        const msg = new SpeechSynthesisUtterance(document.getElementById('target-word').innerText);
+        msg.lang = 'en-US'; window.speechSynthesis.speak(msg);
     }
 
-    function hear() {
-        const speech = new SpeechSynthesisUtterance(document.getElementById('target-word').innerText);
-        speech.lang = 'en-US'; window.speechSynthesis.speak(speech);
-    }
-
-    function toggleTheme() { document.body.classList.toggle('dark-mode'); }
-    function save() { localStorage.setItem('miranXP', xp); document.getElementById('xp-display').innerText = xp; updateLeague(); }
-    function goMenu() { showMenu(); }
+    load();
 </script>
 </body>
 </html>
